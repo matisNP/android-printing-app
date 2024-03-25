@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <item
+            android:title="Abrir archivo"
+            android:id="@+id/open_file"
+            android:icon="@drawable/open_icon"
+            app:showAsAction="never"/>
+
+        <item
+            android:title="Imprimir"
+            android:id="@+id/print_file"
+            android:icon="@drawable/print_icon"
+            app:showAsAction="never"/>
+
+</menu>
