@@ -45,26 +45,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Inicializar la barra de herramientas
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Inicializar vistas
         imageView = findViewById(R.id.image_view);
         textView = findViewById(R.id.textView);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflar el menú; esto agrega elementos a la barra de herramientas si está presente.
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Manejar los clics en los elementos del menú
         int id = item.getItemId();
         if (id == R.id.open_file) {
+            // Acción para abrir un archivo
             abrirArchivo();
             return true;
         } else if (id == R.id.print_file) {
+            // Acción para imprimir un archivo
             mostrarDialogoImprimir();
             return true;
         }
@@ -72,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoImprimir() {
+        // Crear un diálogo para imprimir
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Imprimir");
 
@@ -108,22 +115,27 @@ public class MainActivity extends AppCompatActivity {
         // Agregar el diseño del AlertDialog al AlertDialog
         builder.setView(dialogLayout);
 
+        // Establecer el botón positivo para confirmar la acción de imprimir
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Obtener las opciones seleccionadas
                 String seleccionColor = (String) colorSpinner.getSelectedItem();
                 String seleccionTamano = (String) tamanoSpinner.getSelectedItem();
+                // Enviar los datos para imprimir
                 enviarDatosImpresion(uri, seleccionColor, seleccionTamano);
+                // Mostrar un mensaje de confirmación
                 Toast.makeText(MainActivity.this, "Imprimiendo, Color: " + seleccionColor + ", Tamaño: " + seleccionTamano, Toast.LENGTH_LONG).show();
             }
         });
 
+        // Mostrar el diálogo
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     private void abrirArchivo() {
+        // Intent para abrir un archivo
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*"); // Selecciona todos los tipos de archivo por defecto
@@ -135,12 +147,13 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_OPEN_FILE && resultCode == RESULT_OK) {
             if (data != null) {
+                // Obtener la URI del archivo seleccionado
                 uri = data.getData();
                 try {
-                    // Lee la imagen seleccionada desde su URI
+                    // Leer la imagen seleccionada desde su URI
                     InputStream inputStream = getContentResolver().openInputStream(uri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    // Muestra la imagen en el ImageView
+                    // Mostrar la imagen en el ImageView
                     imageView.setImageBitmap(bitmap);
                     textView.setVisibility(View.GONE);
                 } catch (FileNotFoundException e) {
@@ -151,34 +164,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enviarDatosImpresion(Uri imageUri, String color, String size) {
-
-        serverName = "192.168.101.11";
+        // Configurar los datos de conexión al servidor de impresión
+        serverName = "Tu direccion IPv4";
         serverPort = 12345;
+        // Iniciar un hilo para enviar los datos de impresión al servidor
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    // Establecemos la conexión con el servidor en el puerto 12345
+                    // Establecer la conexión con el servidor en el puerto 12345
                     Socket socket = new Socket(serverName, serverPort);
 
-                    // Creamos un flujo de salida de datos para enviar la imagen
+                    // Crear un flujo de salida de datos para enviar la imagen
                     DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
-                    // Abrimos el archivo de imagen
+                    // Abrir el archivo de imagen
                     InputStream inputStream = getContentResolver().openInputStream(uri);
 
-                    // Creamos un buffer de bytes para leer la imagen
+                    // Crear un buffer de bytes para leer la imagen
                     byte[] buffer = new byte[4096];
 
                     // Variable para almacenar el número total de bytes leídos
                     int bytesRead;
 
-                    // Leemos el archivo de imagen y lo enviamos al servidor
+                    // Leer el archivo de imagen y enviarlo al servidor
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
                         dos.write(buffer, 0, bytesRead);
                     }
 
-                    // Cerramos el flujo de salida de datos y el socket
+                    // Cerrar los flujos de datos y el socket
                     inputStream.close();
                     dos.close();
                     socket.close();
