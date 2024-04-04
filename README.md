@@ -27,6 +27,6 @@ Antes de utilizar la aplicación, debes asegurarte de que tu servidor de impresi
 - Tener una dirección IPv4 válida y un puerto disponible para la conexión. Puedes modificar la dirección IPv4 y el puerto en el archivo MainActivity.java de la aplicación Android.
 
 ```sh
-serverName = "192.168.101.11";
+serverName = "Tu direccion IPv4";
 serverPort = 12345;
 ```
